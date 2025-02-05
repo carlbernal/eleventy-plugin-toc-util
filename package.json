@@ -1,0 +1,29 @@
+{
+  "name": "eleventy-plugin-toc-util",
+  "version": "0.1.0",
+  "description": "Utilitiy functions to work with adding table of contents to eleventy templates",
+  "type": "module",
+  "scripts": {
+    "test": "node toc-util_test.js"
+  },
+  "repository": "carlbernal/eleventy-plugin-toc-util",
+  "bugs": "https://github.com/carlbernal/eleventy-plugin-toc-util/issues",
+  "keywords": [
+    "11ty",
+    "eleventy-plugin",
+    "eleventy",
+    "plugin",
+    "toc",
+    "table of contents"
+  ],
+  "author": "carlbernal",
+  "license": "MIT",
+  "dependencies": {
+    "jsdom": "^26.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.19.0",
+    "eslint": "^9.19.0",
+    "globals": "^15.14.0"
+  }
+}
