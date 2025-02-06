@@ -1,7 +1,3 @@
-/**
- * Simple tests for toc.js
- */
-
 import * as toc from "./toc-util.js";
 
 const input = `
@@ -47,29 +43,21 @@ const input_with_anchor = `
 `;
 
 const input_toc = `
-<ul><li><a href="#carbonara-recipe">Carbonara Recipe</a></li><li><ul><li><a href="#ingredients">Ingredients</a></li><li><ul><li><a href="#pasta">Pasta</a></li><li><a href="#bacon">Bacon</a></li><li><a href="#eggs">Eggs</a></li><li><a href="#cheese">Cheese</a></li></ul><li><a href="#instructions">Instructions</a></li><li><ul><li><a href="#prepare-pasta">Prepare pasta</a></li><li><a href="#prepare-eggs-and-cheese">Prepare eggs and cheese</a></li><li><a href="#cook-bacon">Cook bacon</a></li><li><a href="#mix-all">Mix all</a></li></ul></li></li></ul></li></ul>`;
+<ul><li><a href="#carbonara-recipe">Carbonara Recipe</a><ul><li><a href="#ingredients">Ingredients</a><ul><li><a href="#pasta">Pasta</a></li><li><a href="#bacon">Bacon</a></li><li><a href="#eggs">Eggs</a></li><li><a href="#cheese">Cheese</a></li></ul><li><a href="#instructions">Instructions</a><ul><li><a href="#prepare-pasta">Prepare pasta</a></li><li><a href="#prepare-eggs-and-cheese">Prepare eggs and cheese</a></li><li><a href="#cook-bacon">Cook bacon</a></li><li><a href="#mix-all">Mix all</a></li></ul></li></li></ul></li></ul>`;
 
-// Happy path
-console.assert(
-  toc.attachId(input).trim() == input_with_id.trim(),
-  "attachId function error",
-);
+// attachId function happy path
+console.assert(toc.attachId(input).trim() == input_with_id.trim());
 
-// Happy path
+// attachIdAnchor happy path
 console.assert(
   toc.attachIdAnchor(input_with_id).trim() == input_with_anchor.trim(),
-  "attachIdAnchor function error",
 );
 
-// Happy path
-console.assert(
-  toc.createToc(input_with_id).trim() == input_toc.trim(),
-  "createToc failed with with_id input",
-);
+// creatToc happy path
+console.assert(toc.createToc(input_with_id).trim() == input_toc.trim());
 
-// creatToc output should be the same w/ and w/o extra elements inside headings
+// Make sure creatToc output is the same w/ and w/o extra elements inside headings
 console.assert(
   toc.createToc(input_with_anchor).trim() ===
     toc.createToc(input_with_id).trim(),
-  "createToc failed with with_anchor input",
 );

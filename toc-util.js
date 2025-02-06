@@ -4,9 +4,9 @@ import * as jsdom from "jsdom";
  * Attach transformed ID to target elements
  *
  * @param {string} htmlstring - HTML string passed by template engine
- * @param {string} selector - CSS selector for the target element
- * @param {boolean} skipEmpty - Option to skip heading if it's textContent is empty
- * @param {function(string): string} idTransformer - The function to create ID based on textContent
+ * @param {string} [selector] - CSS selector for the target element
+ * @param {boolean} [skipEmptyText] - Option to skip heading if it's textContent is empty
+ * @param {function(string): string} [idTransformer] - The function to create ID based on textContent
  *
  * @returns {string} - the transformed htmlstring w/ ids
  *
@@ -15,7 +15,7 @@ import * as jsdom from "jsdom";
 export function attachId(
   htmlstring,
   selector = "h1,h2,h3,h4,h5,h6",
-  skipEmpty = true,
+  skipEmptyText = true,
   idTransformer = _textToId,
 ) {
   if (!selector) {
@@ -31,7 +31,7 @@ export function attachId(
    * other use cases are found.
    */
   targets.forEach((element) => {
-    if (!skipEmpty && !element.textContent) {
+    if (!skipEmptyText && !element.textContent) {
       return;
     }
     element.setAttribute("id", idTransformer(element.textContent));
@@ -43,6 +43,7 @@ export function attachId(
 /**
  * Default algorithm for generating html id based on text content
  * @param {string} text - the text content
+ * @return {string}
  */
 function _textToId(text) {
   const id = text
@@ -58,9 +59,8 @@ function _textToId(text) {
  * Attach ID anchor to target elements
  *
  * @param {string} htmlstring - HTML string passed by template engine
- * @param {string} selector - CSS selector for the target element
- * @param {string} textContent - Anchor inner text content
- * @param [string] anchorClasses - List of class to add to anchor tag
+ * @param {string} [selector] - CSS selector for the target element
+ * @param {string} [textContent] - Anchor inner text content
  *
  * @returns {string} - the transformed htmlstring w/ anchor
  *
@@ -70,7 +70,6 @@ export function attachIdAnchor(
   htmlstring,
   selector = "h1,h2,h3,h4,h5,h6",
   textContent = " #",
-  anchorClasses = [""],
 ) {
   if (!htmlstring || !selector) {
     throw new Error("selector should not be empty");
@@ -91,9 +90,6 @@ export function attachIdAnchor(
     const a = document.createElement("a");
     a.href = "#" + element.id;
     a.textContent = textContent;
-    if (anchorClasses > 0) {
-      a.classList.add(...anchorClasses);
-    }
 
     element.appendChild(a);
   });
@@ -102,34 +98,35 @@ export function attachIdAnchor(
 }
 
 /**
- * Create table of contents based on target elements
+ * Create table of contents based on target elements in htmlstring
  *
- * Function assumes that target elements have an id attribute
+ * The function assumes that target elements have an ID attribute
+ *
+ * Generated nested list follows WAI
+ * https://www.w3.org/WAI/tutorials/page-structure/content/#nested-lists
  *
  * @param {string} htmlstring - html string passed by template engine
- * @param {string} selector - css selector for the target element
- * @param {string} listTag - html tag to be used as list container
- * @param {string} listItemTag - html tag to be used as list item
- * @param [string] listTagClasses - List of class to add to list tag
- * @param [string] listItemTagClasses - List of class to add to list item tag
- * @param [string] anchorClasses - List of class to add to anchor tag
+ * @param {string} [selector] - css selector for the target element
+ * @param {string} [listTag] - html tag to be used as list container
+ * @param {string} [listItemTag] - html tag to be used as list item
+ * @param {boolean} [skipEmptyId] - Option to skip heading if it's ID is missing
  *
  * @returns {string} - the table of contents html string
  *
  * @throws If htmlstring, selector, listTag and listItemTag is falsey
- * @throws If any target element has no id
+ * @throws If any target element has no id and skipEmpty is false
  */
 export function createToc(
   htmlstring,
   selector = "h1,h2,h3,h4,h5,h6",
   listTag = "ul",
   listItemTag = "li",
-  listTagClasses = [""],
-  listItemTagClasses = [""],
-  anchorClasses = [""],
+  skipEmptyId = false,
 ) {
   if (!htmlstring || !selector || !listTag || !listItemTag) {
-    throw new Error("selector, listTag, or listItemTag should not be empty");
+    throw new Error(
+      "htmlstring, selector, listTag, or listItemTag should not be empty",
+    );
   }
 
   const dom = new jsdom.JSDOM(htmlstring);
@@ -157,7 +154,7 @@ export function createToc(
   targets.forEach((element, index) => {
     const elementLevel = levels[element.tagName];
 
-    if (!element.id) {
+    if (!skipEmptyId && !element.id) {
       throw new Error(
         `${element.outerHTML} + has no id! make sure target elements has id before passing them through createToc function.`,
       );
@@ -169,41 +166,28 @@ export function createToc(
 
     // Create new list node
     if (elementLevel > currentLevel) {
-      const listItem = document.createElement(listItemTag);
-      if (listTagClasses > 0) {
-        newList.classList.add(...listTagClasses);
-      }
-
       const newList = document.createElement(listTag);
 
-      listItem.appendChild(newList);
-      currentNode.appendChild(listItem);
+      // Append new list to last list item in currentNode
+      currentNode.lastChild.appendChild(newList);
       currentNode = newList;
     }
     // Go back to previous list node
     else if (elementLevel < currentLevel) {
-      // https://www.w3.org/WAI/tutorials/page-structure/content/#nested-lists
-      let stepsUp = currentLevel - elementLevel;
-      while (stepsUp-- > 0 && currentNode.parentElement) {
+      let steps = currentLevel - elementLevel;
+      while (steps-- > 0 && currentNode.parentElement) {
         currentNode = currentNode.parentElement;
       }
     }
 
-    // Update pointer after checking selector level
+    // Update pointer after checking elementLevel
     currentLevel = elementLevel;
 
     // Create list item node and append it to list node
     const listItem = document.createElement(listItemTag);
-    if (listItemTagClasses > 0) {
-      listItem.classList.add(...listItemTagClasses);
-    }
-
     const a = document.createElement("a");
     a.href = "#" + element.id;
     a.textContent = element.textContent.replace(/[^\w\s]/g, "").trim();
-    if (anchorClasses > 0) {
-      listItem.classList.add(...anchorClasses);
-    }
 
     listItem.appendChild(a);
     currentNode.appendChild(listItem);
