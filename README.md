@@ -1,5 +1,7 @@
 # eleventy-plugin-toc-util
 
+[![npm](https://img.shields.io/npm/v/eleventy-plugin-toc-util?style=for-the-badge)](https://www.npmjs.com/package/eleventy-plugin-toc-util)
+
 ## Usage
 
 eleventy.config.js:
@@ -40,7 +42,7 @@ Template file:
 {% endblock %}
 ```
 
-See function JSDocs in [eleventy-plugin-toc-util](https://github.com/carlbernal/eleventy-plugin-toc-util/blob/main/toc-util.js) for more information.
+See function JSDocs in [eleventy-plugin-toc-util.js](https://github.com/carlbernal/eleventy-plugin-toc-util/blob/main/toc-util.js) for more information.
 
 ## Similar solutions
 
