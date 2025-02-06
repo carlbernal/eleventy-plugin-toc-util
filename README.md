@@ -4,7 +4,7 @@
 
 eleventy.config.js:
 
-```
+```javascript
 import * as toc from "eleventy-plugin-toc-util";
 
 export default async function (config) {
@@ -23,7 +23,7 @@ export default async function (config) {
 
 Template file:
 
-```
+```nunjucks
 {% extends "base.njk" %}
 {% block content %}
   <article>
