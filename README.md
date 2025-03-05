@@ -13,12 +13,21 @@ export default async function (config) {
   // Use https://www.11ty.dev/docs/plugins/id-attribute/ to add ids to
   // all headings in the site
 
-  // Or create filter to add ids and anchors to individual contents
-  config.addFilter("attachId", (html) => toc.attachId(html));
+  // Or create filter to add ids to individual tags
+  config.addFilter("attachId", (html) =>
+    toc.attachId(html, ".title,.sub-title,h2,h3,h4"),
+  );
 
-  // Only add anchors to h2 and h3
-  config.addFilter("attachAnchor", (html) => toc.attachIdAnchor(html, "h2,h3"));
+  // Create filter to add anchors to all html headings with IDs
+  config.addFilter("attachAnchor", (html) => toc.attachIdAnchor(html));
 
+  // Or if you want, only add anchors to specific tags
+  config.addFilter("attachAnchor", (html) =>
+    toc.attachIdAnchor(html, ".sub-title,h2,h3"),
+  );
+
+  // Create filter to generate table of contents from content. The order of
+  // items in the toc is based on the selector parameter (see JSDoc)
   config.addFilter("toc", (html) => toc.createToc(html));
 }
 ```

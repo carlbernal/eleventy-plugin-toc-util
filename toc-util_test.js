@@ -2,6 +2,14 @@ const { test, describe } = await import("node:test");
 const assert = await import("node:assert/strict");
 const toc = await import("./toc-util.js");
 
+// Utility function to normalize expected/actual values before asserting
+function normalizeHTML(html) {
+  return html
+    .replace(/\s*(<[^>]+>)\s*/g, "$1")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 const rawHeaders = `
 <h1>Carbonara Recipe</h1>
 <h2>Ingredients</h2>
@@ -73,14 +81,6 @@ const tocOutput = `
   </li>
 </ul>
 `;
-
-// Utility function to normalize expected/actual values before asserting
-function normalizeHTML(html) {
-  return html
-    .replace(/\s*(<[^>]+>)\s*/g, "$1")
-    .replace(/\s+/g, " ")
-    .trim();
-}
 
 describe("TOC util happy paths", () => {
   test("attachId() should add unique IDs to headings", () => {
