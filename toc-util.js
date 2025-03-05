@@ -175,8 +175,18 @@ export function createToc(
     // Go back to previous list node
     else if (elementLevel < currentLevel) {
       let steps = currentLevel - elementLevel;
+
       while (steps-- > 0 && currentNode.parentElement) {
         currentNode = currentNode.parentElement;
+
+        // Move up again to follow WAI nested list spec
+        if (
+          currentNode.parentElement &&
+          currentNode.parentElement.tagName.toLowerCase() ===
+            listTag.toLowerCase()
+        ) {
+          currentNode = currentNode.parentElement;
+        }
       }
     }
 

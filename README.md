@@ -42,7 +42,7 @@ Template file:
 {% endblock %}
 ```
 
-See function JSDocs in [eleventy-plugin-toc-util.js](https://github.com/carlbernal/eleventy-plugin-toc-util/blob/main/toc-util.js) for more information.
+See function JSDocs in [toc-util.js](https://github.com/carlbernal/eleventy-plugin-toc-util/blob/main/toc-util.js) for more information.
 
 ## Similar solutions
 
@@ -52,4 +52,5 @@ See function JSDocs in [eleventy-plugin-toc-util.js](https://github.com/carlbern
 
 ## Tasks
 
-- [ ] Add more tests using node.js test runner
+- [ ] TOC title is based on headings id, so special characters are excluded.
+      Think of a way to create TOC without using heading ids
